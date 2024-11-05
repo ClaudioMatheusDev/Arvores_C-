@@ -552,7 +552,7 @@ return hE - hD;
 
 //----------------------------------------------------------------------------------
 
-int TABB::Altura(TNo *no){
+int TABB::Altura2(TNo *no){
 	int i, j, retorno;
 	
 	if(no == NULL){
@@ -573,20 +573,200 @@ int TABB::Altura(TNo *no){
 
 //----------------------------------------------------------------------------------
 
-int TABB::Recalcular_Altura(TNo* no){
-	int hOir; //Altura da sub-árvore da direita do nó
+int TABB::Recalcular_Altura(TNo* no)
+{
+	int hDir; //Altura da sub-árvore da direita do nó
 	int hEsq; //Altura da sub-árvore da esquerda do nó
+	
+	//a altura de uma sub-árvore vazia é zero
+	if (no == NULL) return 0;
+	
+	//Se a altura já estiver cadastrada retorne ela
+	if (no->h != -1) return no->h;
+	
+	//obtendo a altura da sub-árvore da direita
+	if (no->h != NULL){
+		if(no->dir->h != -1){
+			hDir = no->dir->h;
+		}
+		else{
+			hDir = Recalcular_Altura(no->dir);
+		}
+	}
+	else{
+		hDir = 0;
+	}//if e else1
+	
+	if(no -> esq != NULL){
+		if(no->esq->h != -1){
+			hEsq = no->esq->h;
+		}
+		else{
+			hEsq = Recalcular_Altura(no->esq);
+		}//else1
+	}
+	else{
+		hEsq = 0;
+	}//else2
+	
+	if(hEsq > hDir)
+		no->h = hEsq + 1;
+	else
+		no->h = hDir + 1;	
+	
+	int FB = abs(hEsq - hDir);
+	
+	if( FB > 1)
+	{
+		if(NoDesbalanceado == NULL)
+		{
+			NoDesbalanceado = no;
+		}
+		else
+		{
+			//se a altura do atual nó for meno que a altura do nó desbalanceado
+			if(no->h < NoDesbalanceado->h)
+			{
+				NoDesbalanceado = no;
+			}
+		}
+	}
+	return no->h;
+}//Recalcular_Altura()
+
+//----------------------------------------------------------------------------------
+// ROTAÇÃO SIMPLES À ESQUERDA
+//----------------------------------------------------------------------------------
+void TABB::RSE(TNo* no1, TNo* no2)
+{
+	TNo* pai, *aux;
+	
+	pai = Pai(Raiz, no1->dado);
+	
+	if(no1 == Raiz)
+	{
+		Raiz = no2;
+	}
+	else
+	{
+		if(pai->dir == no1)
+			pai->dir = no2;
+		else
+			pai->esq = no2;	
+	}
+	
+	if(no2->esq == NULL)
+	{
+		no2->esq = no1;
+		no1->dir = NULL;
+	}
+	else
+	{
+		aux = no2->esq;
+		no2->esq = no1;
+		no1->dir = aux;	
+	}
+	
+	Negativar_H(Raiz, no1->dado);
+	Recalcular_Altura(Raiz);
+}//RSE(no1, no2)
+
+//----------------------------------------------------------------------------------
+// ROTAÇÃO SIMPLES À DIREITA
+//----------------------------------------------------------------------------------
+
+void TABB::RSD(TNo* no1, TNo* no2)
+{
+	TNo* pai, *aux;
+	
+	pai = Pai(Raiz, no1->dado);
+	
+	if(no1 == Raiz)
+	{
+		Raiz = no2;
+	}
+	else
+	{
+		if(pai->dir == no1)
+			pai->dir = no2;
+		else
+			pai->esq = no2;	
+	}
+	
+	if(no2->dir == NULL)
+	{
+		no2->dir = no1;
+		no1->esq = NULL;
+	}
+	else
+	{
+		aux = no2->dir;
+		no2->dir = no1;
+		no1->esq = aux;
+	}
+		
+	Negativar_H(Raiz, no1->dado);
+	Recalcular_Altura(Raiz);
+}//RSD(no1, no2)
+
+//----------------------------------------------------------------------------------
+// ROTAÇÃO DUPLA À ESQUERDA
+//----------------------------------------------------------------------------------
+
+void TABB::RDE(TNo* no1 , TNo* no2)
+{
+	RSD(no1->dir, no2->esq);
+
+	RSE(no1, no1->dir);
 }
 
+//----------------------------------------------------------------------------------
+// ROTAÇÃO DUPLA À ESQUERDA
+//----------------------------------------------------------------------------------
+void TABB::RDD(TNo* no1 , TNo* no2)
+{
+	RSD(no1->esq, no2->dir);
 
+	RSE(no1, no1->esq);
+}
 
+//----------------------------------------------------------------------------------
 
-
-
-
-
-
-
+void TABB::Rotacionar()
+{
+	//se houver algum Nó desbalanceado
+	if(NoDesbalanceado != NULL)
+	{
+		TNo *no1, *no2;
+		
+		int FB = GetFB(NoDesbalanceado);
+		
+		if(FB < 0)
+		{
+			if(GetFB(NoDesbalanceado->dir) < 0)
+			{
+				RSE(NoDesbalanceado, NoDesbalanceado->dir);
+			}
+			else
+			{
+				RDE(NoDesbalanceado, NoDesbalanceado->dir);
+			}
+		}
+		
+		else
+		{
+			if(GetFB(NoDesbalanceado->esq) > 0)
+			{
+				RSD(NoDesbalanceado, NoDesbalanceado->esq);
+			}
+			else
+			{
+				RDD(NoDesbalanceado, NoDesbalanceado->esq);
+			}
+		}
+		NoDesbalanceado = NULL;
+	}//SE A ÁRVORE ESTIVER DESBALANCEADA
+}//ROTACIONAR()
 
 
 

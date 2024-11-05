@@ -36,7 +36,9 @@ class TABB
 		int Nivel(TInfo Elemento);
 		int TotalNos(TNo *no); 
 		int Altura(TNo *no);
-		
+		int Altura2(TNo *no);
+
+
 		void Destruir_Arvore();
 			
 		TABB();  // construtor
@@ -50,6 +52,13 @@ class TABB
 
 		bool Remover(TInfo Elemento);
 		
+		//ADD
+		void Negativar_H(TNo* no, TInfo valor);
+		
+		void RSE(TNo* no1, TNo* no2);
+		void RSD(TNo* no1, TNo* no2);
+		void RDE(TNo* no1, TNo* no2);
+		void RDD(TNo* no1, TNo* no2);
 		
 	//-----------------------------------------------
 	protected:
@@ -69,6 +78,10 @@ class TABB
 		void RemoverCaso3(TNo *no);
 		
 		int GetFB(TNo* no);
+		
+		int Recalcular_Altura(TNo* no);
+		
+		void Rotacionar();
 	//-----------------------------------------------
 	private:
 		
