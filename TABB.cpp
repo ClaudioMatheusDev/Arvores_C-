@@ -13,11 +13,15 @@ using namespace std;
 
 // CLASSE ÁRVORE BINÁRIA DE BUSCA - ABB --------------------------------------------
 
+
+
 //----------------------------------------------------------------------------------
 void TABB::InserirNo(TNo *&No, TInfo valor)
 {
 	if( No != NULL )
 	{
+		No->h = -1; //Apagando a altura do Nó
+		
 		if( valor < No->dado )
 		{
 			InserirNo( No->esq, valor);
@@ -33,9 +37,12 @@ void TABB::InserirNo(TNo *&No, TInfo valor)
 		No->dado = valor;
 		No->esq = NULL;
 		No->dir = NULL;
+		
+		No -> h = 1;
 	}
 		
 } // InserirNo(TNo *No, TInfo valor)
+
 
 //----------------------------------------------------------------------------------
 TABB::TNo* TABB::LocalizarNo(TNo *No, TInfo valor)
@@ -206,6 +213,12 @@ void TABB::RemoverCaso1(TNo *&no)
 			pai->dir = NULL;
 		}
 
+		//Atualizando as Alturas e Rotacionar
+		//caso seja necessário
+		Negativar_H(Raiz, pai->dado);
+		Recalcular_Altura(Raiz);
+		Rotacionar();
+
 		// eliminando o nó
 		delete(no);	
 		no = NULL;
@@ -267,6 +280,11 @@ void TABB::RemoverCaso2(TNo *&no)
 	{
 		Raiz = filho;
 	}
+	
+	//Atualizando as Alturas e Rotacionar caso seja necessário
+	Negativar_H(Raiz, filho->dado);
+	Recalcular_Altura(Raiz);
+	Rotacionar();
 	
 	// eliminando o no
 	delete(no);

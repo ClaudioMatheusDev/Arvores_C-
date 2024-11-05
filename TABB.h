@@ -19,7 +19,14 @@ class TABB
 
 		bool IsEmpty();
 		TNo* GetRaiz();		
-
+	
+		void InserirNo(TInfo valor)
+		{
+		InserirNo(Raiz, valor);
+		Recalcular_Altura(Raiz);
+		Rotacionar();
+		} 
+	
 		void InserirNo(TNo *&No, TInfo valor);
 		TNo* LocalizarNo(TNo *No, TInfo valor);
 		
